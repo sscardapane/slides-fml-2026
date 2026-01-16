@@ -1,0 +1,546 @@
+
+\documentclass[12pt,aspectratio=169,notheorems]{beamer}
+
+\input{style.tex}
+\usepackage{booktabs}
+
+% Custom block for ML callouts
+\newtcolorbox{mlblock}[1]{
+  colback=blue!5,
+  colframe=blue!35,
+  fonttitle=\bfseries,
+  title=#1,
+  arc=4pt,
+  outer arc=4pt,
+  left=5pt,
+  right=5pt,
+  top=5pt,
+  bottom=5pt,
+  boxrule=1pt
+}
+
+\begin{document}
+
+{\usebackgroundtemplate{\tikz\node[opacity=0.4,inner sep=0]{\includegraphics[width=\paperwidth,height=\paperheight]{images/header}};}%
+\begin{frame}[plain]
+    \vspace{0.5cm}
+    \title{\large \begin{spacing}{1.0}Fondamenti di Machine Learning\end{spacing}\vspace{0.25em}
+        \normalsize \begin{spacing}{1.0}\textbf{Laurea Triennale in Ingegneria delle Comunicazioni}\end{spacing}\vspace{0.5em}}
+    \subtitle{\Large \textbf{E1 - Python (introduzione)}}
+    \date{
+        {\includegraphics[scale=0.8]{images/Uniroma1}}
+    }
+    \author{
+        \setlength{\tabcolsep}{2pt}
+        \begin{tabular}{rl}
+            \textbf{Docente}: & S. Scardapane \\
+        \end{tabular}
+    }\titlepage
+\end{frame}
+}
+
+% --- SECTION 0: INTRODUZIONE ---
+\section{Introduzione a Python}
+
+\begin{frame}{Obiettivi della sezione}
+    \begin{itemize}
+        \item Cosa è Python.
+        \item Comprendere come viene eseguito il codice (REPL, Script, Notebook).
+        \item Saper organizzare un progetto minimo con moduli e import.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Cos'è Python?}
+    \begin{itemize}
+        \item Linguaggio interpretato ad alto livello, con tipizzazione dinamica.
+        \item \textbf{Filosofia}: "Readability counts" (\href{https://peps.python.org/pep-0020/}{The Zen of Python}).
+        \item Vasto ecosistema di librerie scientifiche.
+    \end{itemize}
+    \begin{mlblock}{Perché serve in ML?}
+        Velocità di prototipazione + supporto di librerie "heavy-lifting" scritte in C++/CUDA (come PyTorch o NumPy) che garantiscono performance elevate.
+    \end{mlblock}
+\end{frame}
+
+
+\begin{frame}{Compilato vs Interpretato}
+    \begin{itemize}
+        \item \textbf{Linguaggi Compilati} (es. C, C++): Il codice viene tradotto interamente in linguaggio macchina prima dell'esecuzione.
+        \item \textbf{Linguaggi Interpretati} (es. Python): Il codice viene letto ed eseguito riga per riga da un \textbf{interprete}.
+    \end{itemize}
+    \vfill
+    \textbf{Vantaggi di Python}:
+    \begin{itemize}
+        \item Portabilità (gira ovunque ci sia l'interprete).
+        \item Sviluppo rapido (no tempi di compilazione).
+        \item Facilità di debugging.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Come gira il codice}
+    \begin{itemize}
+        \item \textbf{REPL (Interattivo)}: Terminale per test rapidi. Input diretto, output immediato.
+        \item \textbf{Script (.py)}: Codice salvato in file di testo ed eseguito dall'interprete. Fondamentale per pipeline e produzione.
+        \item \textbf{Notebook (.ipynb)}: Celle interattive con codice, testo e grafici. Standard per esperimenti e analisi dati.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Esempio: Python REPL}
+    Il REPL permette di eseguire codice riga per riga:
+    \begin{python}[numbers=none]
+        >>> a = 10
+        >>> b = 20
+        >>> print(a + b)
+        30
+        >>> type(a)
+        <class 'int'>
+    \end{python}
+    \vfill
+    \begin{itemize}
+        \item Utile per testare piccole espressioni o ispezionare oggetti.
+        \item Si avvia semplicemente digitando \pythoninline{python} nel terminale.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Cosa sono i Moduli?}
+    In Python, un \textbf{modulo} è semplicemente un file con estensione \pythoninline{.py} che contiene codice.
+    \begin{itemize}
+        \item Permettono di organizzare il codice in modo logico e riutilizzabile.
+        \item Possiamo usare funzioni definite in altri file tramite il comando \pythoninline{import}.
+        \item Es: \pythoninline{import math} ci permette di usare \pythoninline{math.sqrt(4)}.
+    \end{itemize}
+    \begin{mlblock}{Perché serve in ML?}
+        Tutte le principali librerie (NumPy, PyTorch, Scikit-Learn) sono organizzate in moduli e pacchetti che dobbiamo importare per usarne le funzionalità.
+    \end{mlblock}
+\end{frame}
+
+\begin{frame}[fragile]{Esempio minimo: Moduli e Main}
+    \begin{python}
+        # utils.py
+        def greet(name: str) -> str:
+        return f"Ciao, {name}!"
+
+        # main.py
+        from utils import greet
+
+        def main():
+        print(greet("Python"))
+
+        if __name__ == "__main__":
+        main()
+    \end{python}
+\end{frame}
+
+\begin{frame}{Ambienti e Dipendenze}
+    \begin{itemize}
+        \item \textbf{Virtual Environments} (\pythoninline{venv}, \pythoninline{conda}): Isolano le librerie di un progetto per evitare conflitti tra versioni diverse.
+        \item \textbf{Gestione pacchetti}: Uso di \pythoninline{pip} / \pythoninline{uv} e file di configurazione (es: \pythoninline{requirements.txt}).
+    \end{itemize}
+    \begin{mlblock}{Perché serve in ML?}
+        La riproducibilità è chiave: un esperimento deve poter girare mesi dopo con le stesse identiche versioni delle librerie.
+    \end{mlblock}
+\end{frame}
+
+
+
+\begin{frame}{Errori comuni}
+    \begin{itemize}
+        \item \myalert{Riproducibilità}: Nei notebook, le celle eseguite fuori ordine possono creare bug difficili da replicare.
+        \item \myalert{Working directory}: Lanciare script da cartelle diverse può rompere i path di caricamento dei dati.
+        \item \myalert{Install vs Import}: Confondere l'installazione (\pythoninline{pip install}) con l'uso (\pythoninline{import}).
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Mini-esercizio: Hello Modules}
+    Prova a replicare la struttura vista prima:
+    \begin{enumerate}
+        \item Crea un file \pythoninline{calc.py} con una funzione \pythoninline{add(a, b)}.
+        \item Crea un file \pythoninline{run.py}, importa \pythoninline{add} e stampa il risultato di un'operazione.
+        \item Prova a eseguire la stessa funzione definendola direttamente nel REPL (terminale Python).
+    \end{enumerate}
+\end{frame}
+
+% --- SECTION 1: MENTAL MODEL ---
+\section{Mental Model di Python}
+
+\begin{frame}{Obiettivi della sezione}
+    \begin{itemize}
+        \item Comprendere la distinzione tra \textbf{nomi} e \textbf{valori}.
+        \item Capire la differenza tra tipi \textbf{mutabili} e \textbf{immutabili}.
+        \item Imparare a gestire l'\textbf{aliasing} e le copie.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Nomi vs Valori}
+    In Python, le variabili sono \textit{etichette} (nomi) applicate a oggetti (valori) in memoria.
+    \begin{python}
+        a = [1, 2, 3] # 'a' punta a una lista
+        b = a          # 'b' punta allo STESSO oggetto
+        b.append(4)
+        print(a)       # Output: [1, 2, 3, 4] (Aliasing!)
+    \end{python}
+    \begin{mlblock}{Perché serve in ML?}
+        Molte librerie (come NumPy o PyTorch) restituiscono "viste" dei dati invece di copie per efficienza. Modificare una vista modifica l'originale!
+    \end{mlblock}
+\end{frame}
+
+\begin{frame}[fragile]{Oggetti e tipi}
+    \begin{itemize}
+        \item \textbf{Strong typing}: I tipi vanno dichiarati ovunque e sono \textit{vincolanti}.
+        \item \textbf{Weak typing} (Python): Non ci sono controlli sui tipi di dato passati alle varie funzioni, si possono creare situazioni molto particolari (es., \textit{duck typing}).
+    \end{itemize}
+    \textbf{Type Hints}: Suggerimenti non vincolanti a runtime.
+    \begin{python}
+        def process_data(value: float, name: str) -> str:
+        return f"{name}: {value}"
+    \end{python}
+\end{frame}
+
+\begin{frame}[fragile]{Mutabilità vs Immutabilità}
+    \begin{itemize}
+        \item \textbf{Immutabili}: int, float, str, tuple, bool. (Non possono cambiare "in-place")
+        \item \textbf{Mutabili}: list, dict, set. (Possono cambiare stato)
+    \end{itemize}
+    \begin{python}
+        s = "ciao"
+        # s[0] = "C" # Errore!
+
+        l = [1, 2]
+        l[0] = 10    # OK!
+    \end{python}
+\end{frame}
+
+\begin{frame}[fragile]{Assegnamento vs Copia}
+    Per evitare l'aliasing, dobbiamo creare una copia esplicita:
+    \begin{python}
+        a = [1, 2, 3]
+        b = a.copy() # Copia shallow
+        b.append(4)
+        print(a) # [1, 2, 3] - a è preservato!
+    \end{python}
+    \vfill
+    \textbf{Identity vs Equality}:
+    \begin{itemize}
+        \item \pythoninline{a == b}: Controlla se i \textit{valori} sono uguali.
+        \item \pythoninline{a is b}: Controlla se sono lo \textit{stesso oggetto} (stesso indirizzo).
+    \end{itemize}
+\end{frame}
+
+% --- SECTION 2: TIPI BASE E CONTROLLO ---
+\section{Tipi Base e Controllo di Flusso}
+
+\begin{frame}{Obiettivi della sezione}
+    \begin{itemize}
+        \item Ripassare i tipi numerici e booleani.
+        \item Padroneggiare i costrutti \pythoninline{if}, \pythoninline{for} e \pythoninline{while}.
+        \item Comprendere il concetto di \textit{truthy/falsy}.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Variabili e Tipi}
+    \begin{python}
+        a = 5         # Integer
+        b = 4.2       # Float
+        c = 'cat'     # String
+        d = (4 == 3)  # Boolean (False)
+
+        print(type(a)) # <class 'int'>
+    \end{python}
+    \begin{mlblock}{Perché serve in ML?}
+        Diversi tipi di dato richiedono tipi di variabili diversi. Inoltre, la precisione numerica (float32 vs float64) è fondamentale per le performance dei modelli.
+    \end{mlblock}
+\end{frame}
+
+
+\begin{frame}[fragile]{Visualizzare i Dati: f-strings}
+    Python offre diversi modi per stampare variabili:
+    \begin{itemize}
+        \item \textbf{Standard}: \pythoninline{print("Il valore è", x)}
+        \item \textbf{f-strings} (Python 3.6+): \pythoninline{print(f"Il valore è {x}")}
+    \end{itemize}
+    \begin{python}
+        acc = 0.95
+        epoch = 10
+
+        # f-strings permettono espressioni e formattazione
+        print(f"Epoch {epoch}: accuracy = {acc:.2%}")
+        # Output: Epoch 10: accuracy = 95.00%
+    \end{python}
+
+\end{frame}
+
+\begin{frame}[fragile]{Controllo di Flusso: If}
+    \begin{python}
+        x = 10
+        if x > 5:
+        print("Grande")
+        elif x == 5:
+        print("Medio")
+        else:
+        print("Piccolo")
+    \end{python}
+    \textbf{Truthy/Falsy}: Valori "vuoti" (\pythoninline{0}, \pythoninline{[]}, \pythoninline{""}, \pythoninline{None}) sono valutati come \pythoninline{False}.
+\end{frame}
+
+\begin{frame}[fragile]{Iterazione: For e Range}
+    \begin{python}
+        # range(start, stop, step)
+        for i in range(0, 5, 2):
+        print(i) # 0, 2, 4
+
+        # Iterare su elementi
+        names = ["ML", "AI", "DL"]
+        for name in names:
+        if name == "AI":
+        continue # Salta
+        print(name)
+    \end{python}
+\end{frame}
+
+\begin{frame}{Mini-esercizio: Controllo Flusso}
+    Scrivi un ciclo che stampa tutti i numeri da 1 a 20, ma:
+    \begin{itemize}
+        \item Se il numero è divisibile per 3, stampa "Machine".
+        \item Se è divisibile per 5, stampa "Learning".
+        \item Se è divisibile per entrambi, stampa "Machine Learning".
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Errori comuni}
+    \begin{itemize}
+        \item \myalert{Indentazione}: Python usa gli spazi, non le graffe!
+        \item \myalert{Off-by-one}: \pythoninline{range(5)} arriva a 4, non 5.
+        \item \myalert{Modifica durante l'iterazione}: Mai rimuovere elementi da una lista mentre ci stai iterando sopra.
+    \end{itemize}
+\end{frame}
+
+% --- SECTION 3: SEQUENZE E COLLEZIONI ---
+\section{Sequenze e Collezioni}
+
+\begin{frame}{Obiettivi della sezione}
+    \begin{itemize}
+        \item Padroneggiare le liste (indexing e slicing).
+        \item Usare list comprehensions per codice sintetico.
+        \item Gestire dizionari per configurazioni e parametri.
+        \item Sfruttare \pythoninline{enumerate} e \pythoninline{zip}.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Liste: Indexing e Slicing}
+    \begin{python}
+        l = [10, 20, 30, 40, 50]
+        print(l[0])    # 10
+        print(l[-1])   # 50 (ultimo)
+
+        # Slicing: [start:stop:step]
+        print(l[1:3])  # [20, 30]
+        print(l[::-1]) # [50, 40, 30, 20, 10] (reverse)
+    \end{python}
+    \begin{mlblock}{Perché serve in ML?}
+        Lo slicing è il modo standard per fare "mini-batching" o selezionare porzioni di un dataset.
+    \end{mlblock}
+\end{frame}
+
+\begin{frame}[fragile]{List Comprehensions}
+    Modo rapido per creare liste:
+
+    \pythoninline{[expression for item in iterable if condition]}
+
+    \begin{python}
+        data = [1, 2, 3, 4, 5, 6]
+        # Seleziona solo i pari e fanne il quadrato
+        squares = [x**2 for x in data if x % 2 == 0]
+        # squares: [4, 16, 36]
+    \end{python}
+\end{frame}
+
+
+\begin{frame}[fragile]{Tuple vs Liste}
+    Le \textbf{tuple} sono simili alle liste, ma sono \textbf{immutabili}.
+    \begin{itemize}
+        \item \textbf{Sintassi}: \pythoninline{t = (1, 2, 3)} (parentesi tonde).
+        \item Una volta creata, non puoi aggiungere o modificare elementi.
+    \end{itemize}
+    \begin{python}
+        l = [1, 2]
+        l[0] = 10    # OK
+
+        t = (1, 2)
+        # t[0] = 10  # Errore!
+    \end{python}
+    \begin{mlblock}{Perché serve in ML?}
+        Le tuple vengono spesso usate per rappresentare le \textbf{dimensioni} (shape) di un'immagine o di un dataset: \pythoninline{shape = (224, 224, 3)}.
+    \end{mlblock}
+\end{frame}
+
+\begin{frame}[fragile]{Attenzione alle parentesi}
+    In Python, l'uso di più parentesi indica spesso \textbf{strutture annidate}.
+    \begin{python}
+        # Una lista di tuple
+        points = [(0, 0), (1, 1), (2, 2)]
+
+        # Passare una tupla come singolo argomento
+        # random.sample vuole (popolazione, k)
+        import random
+        res = random.sample((10, 20, 30), 2)
+    \end{python}
+    \vfill
+    \begin{itemize}
+        \item \pythoninline{func((1, 2))}: Stai passando \textbf{un solo} argomento (una tupla).
+        \item \pythoninline{func(1, 2)}: Stai passando \textbf{due} argomenti distinti.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Dizionari}
+    Coppie chiave-valore. Utili come contenitori di iper-parametri.
+    \begin{python}
+        config = {
+        'lr': 0.01,
+        'epochs': 10,
+        'optimizer': 'Adam'
+        }
+        print(config['lr'])
+        config['batch_size'] = 32
+    \end{python}
+    \textbf{Iterazione}:
+    \begin{python}
+        for k, v in config.items():
+        print(f"{k} -> {v}")
+    \end{python}
+\end{frame}
+
+\begin{frame}[fragile]{Metodi dei Dizionari}
+    Per accedere ai contenuti di un dizionario possiamo usare:
+    \begin{itemize}
+        \item \pythoninline{.keys()}: Restituisce le chiavi.
+        \item \pythoninline{.values()}: Restituisce i valori.
+        \item \pythoninline{.items()}: Restituisce coppie (chiave, valore).
+    \end{itemize}
+    \begin{python}
+        d = {"lr": 0.01, "optimizer": "Adam"}
+
+        print(d.keys())   # dict_keys(['lr', 'optimizer'])
+        print(d.values()) # dict_values([0.01, 'Adam'])
+        print(d.items())  # dict_items([('lr', 0.01), ...])
+    \end{python}
+\end{frame}
+
+
+\begin{frame}[fragile]{Enumerate e Zip}
+    \begin{itemize}
+        \item \textbf{Enumerate}: Indice + Valore.
+        \item \textbf{Zip}: Mette insieme più sequenze.
+    \end{itemize}
+    \begin{python}
+        inputs = [0.1, 0.2, 0.3]
+        labels = [0, 1, 0]
+
+        for i, (x, y) in enumerate(zip(inputs, labels)):
+        print(f"Esempio {i}: Input {x}, Label {y}")
+    \end{python}
+\end{frame}
+
+\begin{frame}{Mini-esercizio: Collezioni}
+    Data una lista di stringhe \pythoninline{["train", "test", "val"]}, usa una list comprehension per creare una lista di tuple \pythoninline{(indice, stringa_maiuscola)}.
+    \\ \textit{Risultato atteso: [(0, 'TRAIN'), (1, 'TEST'), ...]}
+\end{frame}
+
+\begin{frame}{Errori comuni}
+    \begin{itemize}
+        \item \myalert{KeyError}: Cercare una chiave inesistente in un dict (usa \pythoninline{.get()}).
+        \item \myalert{Performance}: Cercare in una lista è $O(n)$, in un set/dict è $O(1)$.
+        \item \myalert{Mutabilità}: Ricordare che una lista come chiave di un dict \textbf{non è ammessa} (usa le tuple!).
+    \end{itemize}
+\end{frame}
+
+% --- SECTION 4: FUNZIONI ---
+\section{Funzioni}
+
+\begin{frame}{Obiettivi della sezione}
+    \begin{itemize}
+        \item Definire funzioni con parametri opzionali.
+        \item Distinguere tra parametri posizionali e keyword.
+        \item Capire il ritorno di valori multipli.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Definizione e Default Args}
+    \begin{python}
+        def train_model(data, lr=0.01, model_type="CNN"):
+        """Docstring: addestra un modello."""
+        print(f"Training {model_type} with lr={lr}")
+        return "Success", 0.95 # Ritorna una tupla
+    \end{python}
+    \textbf{Chiamate flessibili}:
+    \begin{python}
+        res, acc = train_model(my_data, model_type="Transformer")
+    \end{python}
+\end{frame}
+
+\begin{frame}[fragile]{Funzioni come Oggetti e Lambda}
+    In Python le funzioni sono "first-class citizens".
+    \begin{python}
+        def double(x): return x * 2
+        f = double
+        print(f(5)) # 10
+
+        # Lambda (anonime)
+        f_add = lambda x, y: x + y
+        print(f_add(2, 3)) # 5
+    \end{python}
+\end{frame}
+
+\begin{frame}{Errori comuni}
+    \begin{itemize}
+        \item \myalert{Default mutabili}: Mai usare \pythoninline{def f(l=[])}. La lista \pythoninline{l} viene creata una volta sola e riutilizzata tra le chiamate! Usa \pythoninline{None} come default.
+        \item \myalert{Scope}: Variabili definite dentro la funzione non sono visibili fuori.
+        \item \myalert{Shadowing}: Non chiamare variabili con i nomi di funzioni builtin (es. \pythoninline{list = [1, 2]}).
+    \end{itemize}
+\end{frame}
+
+% --- SECTION 5: MODULI ---
+\section{Moduli e Standard Library}
+
+\begin{frame}[fragile]{Importare Codice}
+    \begin{python}
+        import math
+        print(math.sqrt(16))
+
+        from random import shuffle, seed
+        seed(42) # Riproducibilità!
+
+        import os
+        print(os.getcwd()) # Directory corrente
+    \end{python}
+    \begin{mlblock}{Perché serve in ML?}
+        Il modulo \pythoninline{random} è vitale per lo split dei dataset e l'inizializzazione dei pesi. La riproducibilità (\pythoninline{seed}) è fondamentale.
+    \end{mlblock}
+\end{frame}
+
+% --- SECTION 7: DEBUGGING ---
+\section{Debugging e Errori}
+
+\begin{frame}[fragile]{Leggere un Traceback}
+    Non aver paura degli errori! L'ultima riga dice \textbf{cosa}, le righe sopra dicono \textbf{dove}.
+    \begin{python}
+        l = [1, 2]
+        # l[5] -> IndexError: list index out of range
+
+        # d = {"a":1}
+        # d["b"] -> KeyError: 'b'
+    \end{python}
+    \textbf{Asserzioni}: Utili per sanity check nei training loop.
+    \begin{python}
+        assert x > 0, "Il learning rate deve essere positivo!"
+    \end{python}
+\end{frame}
+
+\begin{frame}[fragile]{Gestione Errori}
+    \begin{python}
+        try:
+        val = int(input("Inserisci un numero: "))
+        except ValueError:
+        print("Non era un numero!")
+    \end{python}
+\end{frame}
+
+\end{document}
