@@ -1,0 +1,99 @@
+
+\documentclass[12pt,aspectratio=169,notheorems]{beamer}
+
+\input{style.tex}
+
+\begin{document}
+
+{\usebackgroundtemplate{\tikz\node[opacity=0.4,inner sep=0]{\includegraphics[width=\paperwidth,height=\paperheight]{images/header}};}%
+\begin{frame}[plain]
+	\vspace{0.5cm}
+	\title{\large \begin{spacing}{1.0}Fondamenti di Machine Learning\end{spacing}\vspace{0.25em}
+		\normalsize \begin{spacing}{1.0}\textbf{Laurea Triennale in Ingegneria delle Comunicazioni}\end{spacing}\vspace{0.5em}}
+	\subtitle{\Large \textbf{0 - Descrizione del corso}}
+	\date{
+		{\includegraphics[scale=0.8]{images/Uniroma1}}
+	}
+	\author{
+		\setlength{\tabcolsep}{2pt}
+		\begin{tabular}{rl}
+			\textbf{Docente}: & S. Scardapane \\
+		\end{tabular}
+	}\titlepage
+\end{frame}
+}
+
+\part{1}
+
+\begin{frame}{Orari ed organizzazione}
+
+	\begin{itemize}
+		\item \textbf{Laurea Triennale in Ingegneria delle Comunicazioni}, codice 10600240, terzo anno (secondo semestre), SSD ING-IND/31.
+		\item \textbf{Orari}: TBD.
+		\item \textbf{Ricevimento}: su appuntamento, online o di persona (Via Eudossiana 18, Dipartimento DIET, primo piano, stanza 102).
+	\end{itemize}
+
+	\begin{tcolorbox}
+		Pagina web del corso: \newline
+		\url{https://www.sscardapane.it/teaching/fml-2026/}.
+	\end{tcolorbox}
+
+	\underline{Importante}: registratevi su \textbf{Google Classroom} (dal sito) per rimanere aggiornati su lezioni ed avvisi importanti.
+
+\end{frame}
+
+\begin{frame}{Date esami}
+
+	\begin{enumerate}
+		\item \textbf{Sessione III}: \textbf{Giugno 2026}, \textbf{Luglio 2026}.
+		\item \textbf{Sessione IV}: \textbf{Settembre 2026}.
+		\item \textbf{Sessione II straordinaria}: \textbf{Novembre 2026} (riservata).
+	\end{enumerate}
+
+	Seguiranno gli appelli di Gennaio 2027 (I), Febbraio 2027 (II), ed Aprile 2027 (I straordinaria).
+
+\end{frame}
+
+\begin{frame}{Modalità di esame}
+
+	\begin{enumerate}
+		\item Un esame scritto, che copre sia gli aspetti teorici (metodologici) che gli aspetti pratici, con un mix di domande aperte e domande a crocette.
+	\end{enumerate}
+
+\end{frame}
+
+\begin{frame}{Obiettivi del corso}
+
+	\begin{itemize}
+		\item Introduzione ai concetti essenziali di Python: tipi di dato, contenitori (liste, tuple, dizionari), controllo di flusso, funzioni, classi (cenni).
+		\item Conoscenza dei concetti base del machine learning: apprendimento supervisionato, bias e varianza, overfitting, ...
+		\item Algoritmi di apprendimento supervisionato: modelli lineari, alberi decisionali, ensemble, $k$-NN.
+		\item Algoritmi per la riduzione della dimensionalità e per il clustering.
+		\item Aspetti di fairness, interpretabilità, e robustezza.
+		\item Conoscenza pratica delle principali librerie Python per il machine learning: NumPy, Pandas, scikit-learn, PyTorch (cenni).
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Libro di testo}
+
+	Le slide sono autocontenute, per materiale aggiuntivo su specifici argomenti si consiglia di contattare il docente.
+
+	Relativamente alle reti neurali, si consigliano \textit{Understanding Deep Learning} (Prince, 2023), \textit{Dive Into Deep Learning}, \textit{Fundamentals of Deep Learning} (Bishop e Bishop, 2023), o \textit{Alice's adventures in a differentiable wonderland} (2025, del docente, disponibile online).
+
+\end{frame}
+
+\begin{frame}{Python}
+
+	Le esercitazioni pratiche verranno fatte in Python. Per seguirle:
+
+	\begin{itemize}
+		\item Per la prima parte del corso è possibile usare Google Colab (\url{https://colab.research.google.com/}), un servizio gratuito per eseguire notebook in Python (accessibile con le credenziali studenti.uniroma1.it).
+		\item Per la parte finale, è possibile installare un ambiente completo sul proprio computer con conda (\url{https://www.anaconda.com/}), o direttamente installando Python ed i pacchetti richiesti con \texttt{pip} o \texttt{uv}.
+	\end{itemize}
+
+	Come editor, consiglio Spyder per una esperienza simile a MATLAB, oppure Visual Studio Code per una esperienza più completa e simile ad un ambiente di produzione (o eventuali cloni, es., Cursor, Antigravity).
+
+\end{frame}
+
+\end{document}

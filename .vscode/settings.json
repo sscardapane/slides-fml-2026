@@ -1,0 +1,32 @@
+{
+    "latex-workshop.latex.outDir": "%WORKSPACE_FOLDER%/pdfs",
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "latexmk (lualatex)",
+            "tools": [
+                "lualatexmk"
+            ]
+        }
+    ],
+    "latex-workshop.latex.tools": [
+        {
+            "name": "lualatexmk",
+            "command": "latexmk",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-pdf",
+                "-lualatex",
+                "-auxdir=%WORKSPACE_FOLDER%/aux",
+                "-outdir=%WORKSPACE_FOLDER%/pdfs",
+                "-r",
+                "%WORKSPACE_FOLDER%/.latexmkrc",
+                "%DOC%"
+            ],
+            "env": {
+                "PROJECT_ROOT": "%WORKSPACE_FOLDER%"
+            }
+        }
+    ]
+}
