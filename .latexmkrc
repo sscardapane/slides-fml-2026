@@ -16,7 +16,7 @@ $pdf_mode = 4;
 $postscript_mode = $dvi_mode = 0;
 
 # Ensure the engine itself knows where to put things
-$lualatex = "lualatex -interaction=nonstopmode -shell-escape -synctex=1 -output-directory=\"$aux_dir\" %O %S";
+$lualatex = "lualatex -interaction=nonstopmode -shell-escape -synctex=1 %O %S";
 
 # Ensure the auxiliary and output directories are found
 $ENV{TEXINPUTS} = ".:$root/slides//:" . ($ENV{TEXINPUTS} || "");

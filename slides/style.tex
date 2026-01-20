@@ -8,6 +8,12 @@
 \usepackage{nicematrix}
 \usepackage[compatibility=false]{caption}
 \usepackage[framemethod=tikz]{mdframed}
+\usepackage{colortbl}
+\graphicspath{{images/}}
+
+% Table column types
+\newcolumntype{F}[1]{p{#1}}
+\newcolumntype{T}[1]{>{\columncolor{blue!10}}p{#1}}
 
 % Colored boxes
 \usepackage{tcolorbox}

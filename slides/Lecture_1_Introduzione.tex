@@ -1,0 +1,290 @@
+
+\documentclass[12pt,aspectratio=169,notheorems]{beamer}
+
+\input{style.tex}
+
+\setlength{\arrayrulewidth}{0.5mm}
+\setlength{\tabcolsep}{10pt}
+\renewcommand{\arraystretch}{1.3}
+
+\begin{document}
+
+{\usebackgroundtemplate{\tikz\node[opacity=0.4,inner sep=0]{\includegraphics[width=\paperwidth,height=\paperheight]{header}};}%
+\begin{frame}[plain]
+	\vspace{0.5cm}
+	\title{\large \begin{spacing}{1.0}Fondamenti di Machine Learning\end{spacing}\vspace{0.25em}
+		\normalsize \begin{spacing}{1.0}\textbf{Laurea Triennale in Ingegneria delle Comunicazioni}\end{spacing}\vspace{0.5em}}
+	\subtitle{\Large \textbf{1 - Introduzione}}
+	\date{
+		{\includegraphics[scale=0.8]{Uniroma1}}
+	}
+	\author{
+		\setlength{\tabcolsep}{2pt}
+		\begin{tabular}{rl}
+			\textbf{Docente}: & S. Scardapane \\
+		\end{tabular}
+	}\titlepage
+\end{frame}
+}
+
+\part{1}
+
+\section{Introduzione}
+\subsection{Che cosa è il machine learning?}
+
+
+\begin{frame}{Il diavolo è nei dettagli}
+
+	Un neolaureato in una filiale di una banca si vede assegnati due task da risolvere:
+
+	\vspace{0.5em}
+	{\large\myalert{Task 1}}
+	\vspace{5pt}
+	{\color{gray}\hrule}
+	Filtrare un insieme di {\color{blue!80}\textbf{email}} in base alla {\color{blue!80}\textbf{dimensione dei loro allegati}}.
+
+	\vspace{1em}
+	{\large\myalert{Task 2}}
+	\vspace{5pt}
+	{\color{gray}\hrule}
+	Filtrare un insieme di {\color{blue!80}\textbf{clienti}} in base alla {\color{blue!80}\textbf{probabilità che vadano in default}}.
+
+	\vspace{0.5em}
+	Il primo task può essere risolto facilmente, mentre il secondo è un buon esempio di \textbf{apprendimento automatico}.
+
+\end{frame}
+
+\begin{frame}{Il beneficio del senno di poi}
+
+	Il concetto di \textit{probabilità di default} non è facile da definire, ma diventa possibile avendo uno storico: ad esempio, se i clienti sono andati in negativo in passato, sono (probabilmente) \textit{inattendibili}.
+
+	\textbf{L'apprendimento automatico} (ML), ed in particolare \textbf{l'apprendimento supervisionato}, permettono di sfruttare questo concetto \textit{inferendo} e \textit{generalizzando} la relazione da dati storici a \textit{nuovi potenziali clienti}.
+
+	\begin{tcolorbox}
+		Questo è solo un esempio didattico, ed il \myalert{credit scoring} tramite ML è una pessima idea per varie ragioni, come vedremo più avanti.
+	\end{tcolorbox}
+
+\end{frame}
+
+\begin{frame}{Lo storico (il dataset)}
+
+	Un \myalert{dataset} è un insieme di coppie (input, output) che descrivono \myalert{esempi} di quanto vorremmo ottenere (es., stimare il credit score).
+
+		{\footnotesize
+			\begin{center}
+				\begin{tabular}{ |F{1.5cm}|F{2.8cm}|F{2.3cm}|F{1.8cm}|T{2cm}|  }
+					\hline
+					Età & Cliente da (anni) & Disponibilità & Prestito & \textbf{Default?} \\
+					\hline
+					18  & 2                 & 3000          & 1000     & {0}               \\
+					42  & 5                 & 10000         & 2000     & {1}               \\
+					... & ...               & ...           & ...      & ...               \\
+					\hline
+				\end{tabular}
+			\end{center}
+		}
+
+		Date le prime 4 colonne (\myalert{input}), vogliamo predire la colonna finale (\myalert{output}). Ogni colonna di input viene detta una \myalert{feature}, mentre l'ultima colonna viene detta \myalert{target}. Il dataset viene detto \myalert{tabellare}.
+
+\end{frame}
+
+\begin{frame}{Tipi di feature}
+
+	\begin{itemize}
+		\item In questo corso consideriamo due tipi di feature molto semplici: feature \myalert{numeriche} (numeri reali), e feature \myalert{categoriche} (valori discreti).
+		\item Il target, invece, può essere a sua volta un valore continuo (es., prezzo di una casa) o discreto (es., classe di un cliente). Parliamo rispettivamente di \myalert{regressione} e \myalert{classificazione}.
+		\item Le feature possono essere direttamente in nostro possesso, oppure estratte in qualche modo dai dati (\myalert{feature engineering}).
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Modelli ed algoritmi di apprendimento}
+
+	Un \myalert{modello} è una funzione che prende in input le feature e produce un output desiderato (es., la classe): 
+
+	\begin{equation}
+		\hat{y} = f(x)
+	\end{equation}
+
+	Un \myalert{algoritmo di apprendimento} è un algoritmo che, dato un dataset, produce una istanza particolare della classe di modelli scelta: diciamo che stiamo \myalert{addestrando} il modello. 
+	
+	Esistono numerosissimi modelli e algoritmi di apprendimento per dataset tabellari, ciascuno con le sue proprietà e limiti, che vedremo più avanti.
+
+\end{frame}
+
+\begin{frame}{Modelli ed apprendimento}
+
+
+	\begin{itemize}
+		\item Il modello descrive in che modo \textit{rappresentare} la relazione tra input ed output: alberi decisionali, regole logiche, reti neurali...
+		\item L'algoritmo di apprendimento descrive come costruire un modello che abbia buone prestazioni sul proprio dataset.
+	\end{itemize}
+
+	Come vedremo, scegliere questi due aspetti dipende da tanti fattori: capacità di rappresentazione, tipo di dato, efficienza computazionale. Dobbiamo anche avere buone \myalert{metriche} per valutare le performance.
+
+\end{frame}
+
+\begin{whiteframe}{Visione d'insieme}
+
+	\begin{figure}
+		\includegraphics[width=0.8\pagewidth]{ML.pdf}
+		\caption{Componenti essenziali di un sistema di apprendimento automatico: definizione delle \myalert{feature}, \myalert{dataset}, \myalert{modelli}, e \myalert{algoritmi di apprendimento}.}
+	\end{figure}
+
+\end{whiteframe}
+
+\begin{frame}{Collezionare un dataset}
+
+	Un \myalert{dataset} è un insieme di coppie (input, output) che descrivono \myalert{esempi} di quanto vorremmo ottenere (es., stimare il credit score). Costruire un buon dataset non è banale ed è solitamente la parte più complessa del problema:
+
+	\begin{itemize}
+		\item Deve essere \textit{rappresentativo} di tutti i possibili clienti (passati e futuri).
+		\item Deve essere sufficiente \textit{numeroso} per permettere di generalizzare a nuovi clienti.
+	\end{itemize}
+
+	Ritorneremo su questi aspetti più avanti quando definiremo il problema in maniera formale.
+
+\end{frame}
+
+\begin{whiteframe}{Esempio di domain shift}
+
+	Spesso i dati su cui vengono allenati i modelli non corrispondono ai dati su cui vengono richieste predizioni: in questo caso, si parla di \myalert{domain shift}.
+
+	\begin{figure}
+		\includegraphics[width=0.5\pagewidth]{DomainShift.pdf}
+		\caption{Un esempio artificiale di domain shift: una banca con clienti prevalentemente giovani allena un modello per uso interno, ma non può applicarlo su nuovi clienti che non rientrano in queste caratteristiche.}
+	\end{figure}
+
+\end{whiteframe}
+
+
+
+\begin{frame}{Pre-processing delle feature}
+
+	Questo semplice esempio chiarisce anche che in molti casi è necessaria una fase di \myalert{pre-processing} dei dati per renderli più facilmente manipolabili, es.:
+	%
+	\begin{itemize}
+		\item Colonne diverse hanno diversi range (\myalert{normalization});
+		\item Alcuni dati potrebbero essero mancanti (\myalert{missing data imputation});
+		\item Alcuni valori potrebbero essere incorretti o sbagliati (\myalert{outlier detection} or \myalert{anomaly detection});
+		\item Nuove feature possono essere estratte da feature in nostro possesso, es., il CAP a partire dall'indirizzo (\myalert{feature engineering}).
+	\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Overfitting e bias}
+
+	Un famoso aneddoto (con buona probabilità apocrifo)\footnote[frame]{https://gwern.net/tank} descrive una rete neurale allenata a riconoscere carri armati. Per errore, tutte le foto di carri armati nel training set sono scattate in giorni nuvolosi, e la rete `impara' questa correlazione. Le prestazioni in fase di training sono eccellenti, mentre in fase di \textit{deployment} sono pessime.
+
+	Questo è un esempio molto artificiale di \myalert{bias} nella collezione dei dati. Lo scarto di prestazione viene detto \myalert{overfitting}.
+
+\end{frame}
+
+\begin{whiteframe}{Husky o neve?}
+
+	\begin{figure}
+		\includegraphics[width=0.6\pagewidth]{images/husky}
+		\caption{Un famoso esempio (artificiale) di bias (riprodotto da Ribeiro et al., 2016): un sistema allenato a riconoscere gli husky impara in realtà a riconoscere la neve sullo sfondo.}
+	\end{figure}
+
+\end{whiteframe}
+
+\begin{whiteframe}{Il caso COMPAS (2016)}
+
+	\begin{figure}
+		\includegraphics[width=0.8\pagewidth]{images/propublica}
+		\caption{COMPAS è un esempio importante di bias in un sistema usato in ambito giudiziario, a seguito di una indagine di Pro Publica nel 2016. L'inchiesta ha avuto un ampio seguito mediatico ed accademico, in quanto le conclusioni possono variare a seconda di quale metrica di `unfairness' scegliamo di usare.}
+	\end{figure}
+
+\end{whiteframe}
+
+
+
+
+\subsection{Machine learning e reti neurali}
+
+\begin{whiteframe}{ChatGPT (dall'alto)}
+
+	Un modello come ChatGPT genera una distribuzione sul \myalert{prossimo blocco di testo} (token), quindi viene chiamato un \myalert{language model}. Usandolo ripetutamente possiamo generare testi molto lunghi (\myalert{autoregressione}).
+
+	\begin{figure}
+		\includegraphics[width=0.7\columnwidth]{images/LLM}
+	\end{figure}
+
+	Nella terminologia di prima, il prompt è l'\textit{input}, mentre la generazione è l'\textit{output}, e la rete neurale è il \textit{modello}.
+
+\end{whiteframe}
+
+
+\begin{whiteframe}{StableDiffusion e modelli generativi di immagini}
+
+	\begin{figure}
+		\includegraphics[height=0.8\textheight]{images/StableDiffusion}
+		\caption{\href{https://www.reddit.com/r/midjourney/comments/129pek3/mcu_characters_as_80s_wrestlers/}{MCU Characters as 80s Wrestlers [Reddit]}}
+	\end{figure}
+
+\end{whiteframe}
+
+\begin{whiteframe}{StableDiffusion, sempre dall'alto}
+
+	Un modello generativo come Stable Diffusion rientra sempre nell'ambito dell'apprendimento supervisionato, ma in questo caso l'input è una descrizione testuale e l'output una immagine:
+	%
+	\begin{figure}
+		\includegraphics[width=0.7\columnwidth]{images/Text2Image}
+	\end{figure}
+
+\end{whiteframe}
+
+\begin{frame}{Un confronto}
+
+	Stable Diffusion e ChatGPT sono a loro volta esempi di apprendimento automatico, essendo allenati a partire da dataset di testo o di coppie (immagine, descrizione). Hanno però diverse caratteristiche peculiari:
+	%
+	\begin{itemize}
+		\item I loro input ed output possono essere estremamente complessi (testo, immagini, video, ...).
+		\item Di conseguenza, i dataset richiesti possono a loro volta essere molto grandi (milioni di immagini, PB di testo).
+	\end{itemize}
+	%
+	Di tutti i modelli di apprendimento supervisionato, le \myalert{reti neurali} sono l'unico metodo noto che possono scalare a questi contesti. In questo corso vedremo solo le basi per quanto riguarda le reti neurali.
+
+\end{frame}
+
+\subsection{Altri argomenti}
+
+\begin{frame}{Oltre l'apprendimento supervisionato}
+
+	L'apprendimento supervisionato è solo un sottoinsieme del campo del machine learning, seppur il più comune. Altre categorie interessanti di apprendimento automatico sono:
+	%
+	\begin{itemize}
+		\item \myalert{Unsupervised learning}: in questo caso il nostro obiettivo non dipende da una etichetta (\textit{label}) associato agli input. Ad esempio nel \myalert{clustering} vogliamo raggruppare i nostri dati in insiemi sufficientemente omogenei. Nella \myalert{dimensionality reduction}, vogliamo proiettarli in uno spazio a 2D o 3D per la visualizzazione.
+		\item \myalert{Reinforcement learning} (apprendimento con rinforzo): in questo caso il modello deve prendere diverse decisioni in sequenza, e riceve un reward solo al termine di ogni sequenza (es., giocare a scacchi).
+	\end{itemize}
+
+\end{frame}
+
+\begin{whiteframe}{Visualizzazione del clustering}
+
+	Il clustering può essere inteso come un problema di classificazione per il quale non conosciamo le etichette in fase di training, es., segmentare i clienti di una azienda in gruppi non noti a priori per fini di marketing.
+	%
+	\begin{figure}
+		\includegraphics[width=0.5\columnwidth]{images/1200px-Cluster-2.svg.png}
+		\caption{Esempio di clustering (riprodotto da Wikipedia).}
+	\end{figure}
+
+\end{whiteframe}
+
+\begin{frame}{Data cleaning e preprocessing}
+
+	Esistono poi argomenti ortogonali alla scelta del modello e del tipo di apprendimento, che approfondiremo solo in parte:
+	%
+	\begin{itemize}
+		\item \myalert{Misura delle performance} (valutazione), soprattutto in situazioni con classi sbilanciate o costi diversi a seconda del tipo di errore.
+		\item \myalert{Interpretabilità} delle predizione (\textit{perché} è stata scelta una certa classe).
+		\item \myalert{Robustezza} dei modelli e \myalert{costo computazionale} per l'apprendimento e per l'esecuzione.
+		\item \myalert{Deployment} dei modelli e verifica costante del loro corretto funzionamento.
+	\end{itemize}
+
+\end{frame}
+
+\end{document}

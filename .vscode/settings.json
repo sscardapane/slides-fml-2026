@@ -28,5 +28,10 @@
                 "PROJECT_ROOT": "%WORKSPACE_FOLDER%"
             }
         }
-    ]
+    ],
+    "latex-workshop.view.pdf.viewer": "tab",
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    "latex-workshop.latex.autoBuild.cleanAndRetry.enabled": false,
+    "latex-workshop.view.pdf.refresh.method": "both",
+    "latex-workshop.latex.watch.pdf.delay": 500
 }
