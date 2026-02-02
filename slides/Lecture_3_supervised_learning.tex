@@ -1,0 +1,648 @@
+
+\documentclass[12pt,aspectratio=169]{beamer}
+
+\input{style.tex}
+
+\begin{document}
+
+	{\usebackgroundtemplate{\tikz\node[opacity=0.4,inner sep=0]{\includegraphics[width=\paperwidth,height=\paperheight]{images/header}};}%
+	\begin{frame}[plain]
+		\vspace{0.5cm}
+		\title{\large \begin{spacing}{1.0}Fondamenti di Machine Learning\end{spacing}\vspace{0.25em}
+			\normalsize \begin{spacing}{1.0}\textbf{Laurea Triennale in Ingegneria delle Comunicazioni}\end{spacing}\vspace{0.5em}}
+		\subtitle{\Large \textbf{3: Apprendimento supervisionato e regressione lineare}}
+		\date{
+			{\includegraphics[scale=0.8]{images/Uniroma1}}
+		}
+		\author{
+			\setlength{\tabcolsep}{2pt}
+			\begin{tabular}{rl}
+				\textbf{Lecturer}: & S. Scardapane \\
+			\end{tabular}
+		}\titlepage
+	\end{frame}
+	}
+
+\part{1}
+
+\section{Apprendimento supervisionato}
+\subsection{Definizioni di base}
+
+\begin{frame}{Definizione di apprendimento supervisionato}
+	
+	L'\myalert{apprendimento supervisionato} ha l'obiettivo di inferire una relazione tra due classi di oggetti, l'\myalert{input space} $\mathcal{X}$ e l'\myalert{output space} $\mathcal{Y}$, sulla base di dati storici.
+	
+	Ad esempio, un elemento $x \in \mathcal{X}$ può essere una rappresentazione di una mail (es., lista ordinata di parole), mentre il corrispondente output $\mathcal{Y}$ può essere $0$ per una mail valida, $1$ per una mail di spam.
+	
+\end{frame}	
+
+\begin{frame}{Tipologie di apprendimento supervisionato}
+
+	\begin{itemize}
+		\item \textbf{Classificazione}: gli elementi di $\mathcal{Y}$ sono in numero finito, $\left\{1, \ldots, M\right\}$. Se $M=2$, come nel caso delle email, parliamo di \myalert{classificazione binaria}. Altrimenti, parliamo di \myalert{classificazione multi-classe}.
+		\item \textbf{Regressione}: $\mathcal{Y}$ è un insieme infinito, es., la temperatura di una stanza. In un problema di regressione vogliamo predire una informazione \textit{quantitativa} invece che \textit{qualitativa}.
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}{Alcuni esempi}
+	
+	\begin{enumerate}
+		\item \textbf{Speech recognition}: $x$ è un recording audio, e $y$ la sua trascrizione.
+		\item \textbf{Robot navigation}: $x$ è l'output di due telecamere montate su un robot, e $y$ il comando da eseguire.
+		\item \textbf{Text translation}: $x$ è una frase in inglese, e $y$ la sua traduzione in francese.
+		\item \textbf{Product recommendation}: $x$ è un utente, e $y$ la sua affinità ad un certo prodotto nel catalogo.
+	\end{enumerate}
+	
+\end{frame}
+
+\begin{frame}{Dataset tabulari}
+	
+	In questo corso assumiamo che l'input sia un vettore di numeri reali, che scriviamo in grassetto $\mathbf{x}$, ed abbiamo quindi $\mathcal{X} = \mathbb{R}^d$. Chiamiamo $\mathbf{x}$ un \myalert{pattern}.
+	
+	Molti oggetti di interesse possono essere ridotti in questa forma tramite una qualche trasformazione. Ad esempio, un testo può essere convertito in un vettore che conta la presenza di un certo insieme di parole (\myalert{bag-of-words}).
+	
+	Un singolo elemento $x_i$ viene detto una \myalert{feature} nel machine learning, o una \myalert{variabile indipendente} in statistica.
+	
+\end{frame}
+
+\begin{frame}{Feature categoriche}
+	
+	Una classe importante di feature sono quelle dette \myalert{categoriche}. Ad esempio, in una applicazione medica una feature può distinguere il colore degli occhi di un paziente. Come vedremo, rappresentarla con $\left\{0, 1, 2, \ldots, \right\}$ è problematico perché impone un ordinamento sulle categorie.
+	
+	Se il numero dei possibili valori è basso, è possibile usare un \myalert{dummy encoding} (o $1$-of-$K$ encoding, o \myalert{one-hot encoding}), dove usiamo un singolo bit per ogni possibile valore:
+	
+	$$
+	\text{Verdi} = 
+	\begin{bmatrix}
+		1 \\ 0 \\ 0
+	\end{bmatrix}
+	\,\,\,
+	\text{Marroni} =
+	\begin{bmatrix}
+		0 \\ 1 \\ 0
+	\end{bmatrix}
+	\,\,\,
+	\text{Blu	} =
+	\begin{bmatrix}
+		0 \\ 0 \\ 1
+	\end{bmatrix}
+	$$
+	
+\end{frame}
+
+\subsection{Formalizzazione del problema}
+
+\begin{frame}{Dataset}
+	
+	\begin{tcolorbox}
+		Un dataset (etichettato, \textit{supervised}) è un insieme di $n$ \myalert{esempi} della relazione desiderata:
+		%
+		\begin{equation}
+			\mathcal{S} = \left\{ (\mathbf{x}_1, y_1), \ldots, (\mathbf{x}_n, y_n) \right\} \,.
+		\end{equation}
+	\end{tcolorbox}
+	
+	Informalmente, dato un `nuovo' esempio $(\mathbf{x},y)$ non contenuto in $\mathcal{S}$, vorremmo una funzione $f(\cdot)$ tale che:
+	%
+	\begin{equation}
+		f(\mathbf{x}) \approx y \,.
+	\end{equation}
+	%
+	Più in generale, possiamo testare il modello su un secondo dataset $\mathcal{T}$ indipendente, i.e., $\mathcal{S} \bigcap \mathcal{T} = \emptyset$, detto \myalert{test set}.
+	
+\end{frame}
+
+\begin{frame}{Dataset e probabilità}
+	
+	In generale, non possiamo assumere che $y_i$ sia determinato \textit{univocamente} da $\mathbf{x}_i$ per diverse ragioni:
+	%
+	\begin{itemize}
+		\item Potrebbero esistere altre feature che determinano $y_i$ che non osserviamo (\myalert{latent variables}).
+		\item Alcune feature di $\boldsymbol{x}_i$ potrebbero mancare od essere errate, così come i valori di $y_i$ potrebbero essere corrotti da rumore (es., sensori).
+		\item Potrebbe comunque essere impossibile effettuare una previsione unica (es., predire l'evoluzione del prezzo di una azione nei prossimi sei mesi).
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}{Statistical learning}
+	
+	Date queste condizioni di incertezza, possiamo assumere genericamente che i nostri dati sono descritti da una \textit{distribuzione di probabilità}:
+	%
+	$$p(\boldsymbol{x}_i, y_i) = p(\boldsymbol{x}_i)p(y_i \mid \boldsymbol{x}_i) = p(\boldsymbol{y}_i)p(\mathbf{x}_i \mid y_i) \,.$$
+	%
+	In questa formalizzazione, un dataset diventa una variabile aleatoria data dal campionamento di $n$ valori indipendenti e identicamente distribuiti (i.i.d.). $\mathcal{S}$ e $\mathcal{T}$ sono quindi dati da due campionamenti separati.
+	%
+	\begin{equation*}
+		p(\mathcal{S}) = \underbrace{\prod_{i=1}^n p(\mathbf{x}_i, y_i)}_{\text{Likelihood}} \;\;\;\;\;\;\;\; \log p(\mathcal{S}) = \underbrace{\sum_{i=1}^n \log p(\mathbf{x}_i, y_i)}_{\text{Log-likelihood}}
+	\end{equation*}	
+
+\end{frame}
+
+\begin{frame}{Vincoli sul dataset}
+	
+	L'assunzione che gli elementi del training set $\mathcal{S}$ e del test set $\mathcal{T}$ siano campionati i.i.d. dalla stessa distribuzione è importante ma restrittiva:
+	
+	\begin{itemize}
+		\item \textbf{Identicamente distribuiti}: la distribuzione $p(\cdot, \cdot)$ è identica e non varia (es., nel riconoscere specie di gatti, esse sono stabili nel tempo).
+		\item \textbf{Indipendenti}: non esiste un bias nel modo in cui campioniamo i dati (es., collezionare foto di gatti in un unico quartiere).
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}{Apprendimento generativo ed apprendimento discriminativo}
+	
+	Gli algoritmi di apprendimento supervisionato si differenziano a seconda di quale termine cercano di approssimare:
+	%
+	\begin{enumerate}
+		\item Algoritmi che approssimano $p(\mathbf{x} \mid y)$ o $p(\mathbf{x})$ sono detti \myalert{generativi} (es., \myalert{linear discriminant analysis}).
+		\item Algoritmi che approssimano solo $p(y \mid \mathbf{x})$ vengono detti \myalert{discriminativi}.
+	\end{enumerate}
+	%
+	Nella maggior parte del corso ci concentreremo su approcci discriminativi, in quanto più semplici concettualmente.
+	
+	\begin{tcolorbox}
+		{ ``\textit{When solving a problem of interest, do not solve a more general problem as an intermediate step.}''}
+		\vskip0mm
+		\hspace*\fill{\small --- V. Vapnik, Stastistical learning theory, 1998}
+	\end{tcolorbox}
+	
+\end{frame}
+
+\begin{frame}{Approcci discriminativi}
+	
+	Supponiamo di essere interessati solo alla classe più probabile, o al valore più probabile nel caso di regressione. In questo caso:
+	%
+	\begin{align}
+		y^* & = \underset{y}{\arg\max} \, p(y \mid \mathbf{x})p(\mathbf{x}) = \\ & \underset{y}{\arg\max} \, \log(p(y \mid \mathbf{x})) + \log(p(\mathbf{x})) = \underset{y}{\arg\max} \, \log(p(y \mid \mathbf{x})) \,.
+	\end{align}
+	%
+	Quindi, la cosa che ci interessa maggiormente è una funzione $f(\vc{x})$ che approssimi il termine che massimizza la log-probability della classe.
+	
+\end{frame}
+
+\section{Model-based supervised learning}
+\subsection{Modelli lineari e Least Squares}
+
+\begin{frame}{Modello lineare}
+	
+	Il modello più semplice per $f(\mathbf{x})$ è una funzione \myalert{lineare}: come vedremo, questo semplifica l'implementazione e la soluzione del problema di ottimizzazione.
+	
+	\begin{tcolorbox}
+		Un modello lineare $f$ è definito come:
+		%
+		\begin{equation}
+			f(\vc{x}) = \sum_{i=1}^d w_ix_i + b = \vc{w}^\top \vc{x} + b \,,
+		\end{equation}
+		
+		dove $\vc{w}$ e $b$ (\myalert{bias} o \myalert{intercept}) sono parametri del modello.
+	\end{tcolorbox}
+	%
+	Nel caso di una sola feature, questa è la classica retta $f(x)=mx+q$!
+	
+\end{frame}
+
+\begin{whiteframe}{Visualizzazione}
+	
+	\begin{figure}
+		\centering\includegraphics{./images/Figure1.16.pdf} %
+		\vspace{-1em}\caption{Riprodotto da Bishop e Bishop, 2023.}
+	\end{figure}
+	
+\end{whiteframe}
+
+\begin{frame}{Modelli senza bias}
+	
+	Supponendo che una feature del nostro input sia sempre costante, $\vc{x} = \left[ x_1, \ldots, x_{d-1}, 1 \right]$, possiamo semplificare la notazione rimuovendo il bias:
+	%
+	$$
+	f(\vc{x}) = \sum_{i=1}^{d} w_i x_i = \sum_{i=1}^{d-1} w_ix_i + w_d \,.
+	$$
+	%
+	Nel seguito usiamo questa notazione per evitare di scrivere esplicitamente il bias nelle equazioni, che però non va mai dimenticato a livello implementativo!
+	
+\end{frame}
+
+\begin{frame}{Least-squares intuitivo}
+	
+	Come scegliere i parametri $\mathbf{w}$ del modello lineare? Intuitivamente, possiamo cercare i parametri che minimizzano la discrepanza (l'errore) tra le predizioni e i valori reali nel training set.
+	
+	Una scelta naturale è minimizzare la somma dei quadrati degli errori (\myalert{sum of squared residuals}):
+	%
+	\begin{equation}
+		\mathbf{w}^* = \underset{\mathbf{w}}{\arg\min} \, \sum_{i=1}^n \left(y_i - f(\mathbf{x}_i)\right)^2
+	\end{equation}
+	%
+	Il valore ottimale dei parametri $\mathbf{w}$ è quello che minimizza la somma dei residui al quadrato: per questa ragione, questo metodo viene detto \myalert{least-squares} (LS) regression.
+	
+\end{frame}
+
+\begin{whiteframe}{Visualizzazione del least-squares}
+	
+	\begin{figure}
+		\centering\includegraphics{./images/Figure1.3.pdf} %
+		\vspace{-1em}\caption{Scegliamo i parametri $\mathbf{w}$ che minimizzano la somma degli scostamenti (in verde) al quadrato.}
+	\end{figure}
+	
+\end{whiteframe}
+
+\subsection{Interpretazione probabilistica}
+
+\begin{frame}{Maximum likelihood}
+	
+	Possiamo dare una giustificazione formale al criterio least-squares? Per farlo, supponiamo  che $f(\mathbf{x})$ predica la media di una Gaussiana, la cui varianza, che modella il rumore sui dati, è fissata a $\sigma^2$:
+	%
+	\begin{equation}
+		p(y \mid \mathbf{x}) = \mathcal{N}(y \mid f(\mathbf{x}), \sigma^2) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{1}{2}\left(\frac{y-f(\mathbf{x})}{\sigma}\right)^2\right)
+	\end{equation}
+	
+\end{frame}
+
+\begin{frame}{Maximum likelihood (2)}
+	
+	Data questa assunzione, cerchiamo i parametri che massimizzano la probabilità dei dati che abbiamo osservato (il nostro training dataset). 
+	
+	Come detto sopra, questo è il criterio di \myalert{maximum likelihood}:
+	%
+	\begin{equation}
+		\mathbf{w}^* = \underset{\mathbf{w}}{\arg\max} \, \prod_{i=1}^n p(y_i \mid f(\mathbf{x}_i), \sigma^2) = \underset{\mathbf{w}}{\arg\max} \, \sum_{i=1}^n \log\left(p(y_i \mid f(\mathbf{x}_i), \sigma^2)\right)
+	\end{equation}
+	%
+	Vediamo cosa succede espandendo il termine all'interno della sommatoria.
+	
+\end{frame}
+
+\begin{frame}{Equivalenza con il Least-squares}
+	
+	Ricordando il logaritmo della Gaussiana:
+	%
+	\begin{equation}
+		\log(p(y \mid \mathbf{w}^\top\mathbf{x}, \sigma^2)) = -\frac{1}{2}\log(\sigma) - \frac{1}{2}\log(2\pi) - \frac{1}{\sigma^2}(y - \mathbf{w}^\top\mathbf{x})^2
+	\end{equation}
+	%
+	Massimizzando per $\mathbf{w}$ vediamo che i primi due termini sono costanti e rimane solo il terzo termine.
+	
+	\begin{tcolorbox}
+		Massimizzare la likelihood (con rumore Gaussiano) è equivalente a minimizzare la somma dei quadrati degli errori (LS)!
+		%
+		\begin{equation}
+			\underset{\mathbf{w}}{\arg\max} \sum_{i=1}^n \log\left(p(y_i \mid f(\mathbf{x}_i))\right) \longleftrightarrow \underset{\mathbf{w}}{\arg\min} \sum_{i=1}^n \left(y_i - f(\mathbf{x}_i)\right)^2
+		\end{equation}
+	\end{tcolorbox}
+	
+\end{frame}
+
+\begin{frame}{Apprendere la varianza}
+	
+	Dato $\vc{w}^*$, possiamo ottimizzare la maximum likelihood anche rispetto a $\sigma^2$, da cui si ottiene la relazione molto intuitiva:
+	%
+	\begin{equation}
+		\sigma^{2,*} = \frac{1}{n}\sum_{i=1}^n (y_i - \mathbf{w}^{*,\top}\mathbf{x})^2 \,.
+	\end{equation}
+	%
+	In questo caso, l'incertezza del modello è fissa per ogni $\mathbf{x}$ (\myalert{modello omoscedastico}), ed è data dalla media dei residui al quadrato.
+	
+\end{frame}
+
+\begin{frame}{Modelli eteroscedastici}
+	
+	Un vantaggio dell'approccio probabilistico è che possiamo facilmente rilassare questa assunzione e considerare un modello in cui la varianza dipende dall'input:
+	%
+	\begin{equation}
+		p(y \mid \mathbf{x}) = \mathcal{N}(y \mid f_\mu(\mathbf{x}), f_{\sigma^2}(\mathbf{x})) \,.
+	\end{equation}
+	%
+	In questo caso (\myalert{modello eteroscedastico}) possiamo apprendere sia la media che la varianza dai dati, massimizzando la likelihood congiunta. Questo è molto utile in applicazioni reali dove l'incertezza non è uniforme.
+	
+\end{frame}
+
+\begin{whiteframe}{Visualizzazione (modello eteroscedastico)}
+	
+	\begin{figure}
+		\centering\includegraphics{../scripts/OLS_linear_data_sigma.pdf} %
+		\caption{Esempio di regressione con incertezza predittiva appresa dai dati (banda corrispondente a $\pm \sigma(\mathbf{x})$).}
+	\end{figure}
+	
+\end{whiteframe}
+
+\subsection{Empirical risk minimization}
+
+\begin{frame}{Confronto tra i due approcci}
+	
+	Abbiamo seguito due strade diverse per arrivare alla stessa idea. 
+	%
+	\begin{enumerate}
+		\item \textbf{Intuitiva/Geometrica}: minimizzare l'errore.
+		\item \textbf{Probabilistica}: massimizzare la verosimiglianza dei dati osservati assumendo rumore Gaussiano.
+	\end{enumerate}
+	%
+	I due approcci danno due prospettive diverse ed ugualmente interessanti: ad esempio, ragionare in termini di errore ci permette di definire funzioni di costo alternative, mentre ragionare su $p$ permette di integrare misurare di incertezza nella predizione.
+	
+\end{frame}
+
+\begin{frame}{Funzioni di costo}
+	
+	Il termine $\left(y_i - f(\mathbf{x}_i)\right)^2$ rappresenta l'\textit{errore} (il \textit{residuo}) che la funzione $f$ ha sull'esempio $(\mathbf{x}_i, y_i)$. Possiamo generalizzare questa idea introducendo il concetto di \myalert{loss function} (o \myalert{funzione di costo}).
+	
+	\begin{tcolorbox}
+		Una \myalert{loss function} $L(y, \hat{y}) \in \mathbb{R}$ associa ad ogni predizione $\hat{y}=f(\mathbf{x})$ uno scalare, tale per cui $L(y, \hat{y}_1) < L(y, \hat{y}_2)$ implica che $\hat{y}_1$ è una miglior predizione di $\hat{y}_2$.
+	\end{tcolorbox}
+	
+\end{frame}
+
+\begin{whiteframe}{Visualizzazione della squared loss}
+	
+	\begin{figure}
+		\centering\includegraphics[scale=0.9]{../scripts/squared_loss.pdf} %
+		\caption{Visualizzazione della squared loss al variare del residuo $e=y-f(\mathbf{x})$.}
+	\end{figure}
+	
+\end{whiteframe}
+
+
+\begin{frame}{Scegliere una loss function}
+	
+	Da questa seconda prospettiva (\myalert{statistical learning}) possiamo direttamente \textit{definire} una funzione di costo $L$ che ci sembri adeguata. 
+	
+	Ad esempio, per evitare di pesare quadraticamente errori sempre più alti, potremmo considerare il valore assoluto:
+	%
+	\begin{equation}
+		\text{Absolute deviation: } L(y, \hat{y}) = \lvert y - \hat{y} \rvert \,.
+	\end{equation}
+	%
+	Combinando le due loss otteniamo la \myalert{Huber loss}, per un $\sigma > 0$ a scelta:
+	%
+	\begin{equation}
+		\text{Huber loss: } L(y, \hat{y}) = \begin{cases} \frac{1}{2}\left(y - \hat{y}\right)^2 & \text{ se } \lvert y - \hat{y} \rvert \le \sigma \\ \sigma\left(\lvert y - \hat{y} \rvert - \frac{1}{2}\sigma\right) & \text{ altrimenti } \end{cases}
+	\end{equation}
+	
+\end{frame}
+
+\begin{whiteframe}{Confronto di varie loss per la regressione}
+	
+	\begin{figure}
+		\centering\includegraphics[scale=1.0]{../scripts/loss_functions_regression.pdf} %
+	\end{figure}
+	
+\end{whiteframe}
+
+\begin{frame}{Empirical risk minimization}
+	
+	Data una funzione di costo, possiamo definire un problema di apprendimento supervisionato come segue.
+	%
+	\begin{tcolorbox}
+		Il \myalert{rischio atteso} di una funzione $f(\mathbf{x})$ è dato da:
+		%
+		\begin{equation}
+			f^*(\mathbf{x}) = \underset{f}{\arg\min} \left\{ \mathbb{E}_{p(\mathbf{x},y)} \left[ L(y, f(\mathbf{x})) \right] \right\} \,.
+		\end{equation}
+	\end{tcolorbox}
+	%
+	Il rischio atteso non è calcolabile (non avendo accesso alla distribuzione), ma dato un dataset può essere approssimato come la sua media empirica (\myalert{empirical risk minimization}):
+	%
+	\begin{equation}
+		f^*(x) = \underset{f}{\argmin} \left\{ \frac{1}{n} \sum_{i=1}^n L(y_i, f(\mathbf{x}_i)) \right\} \,.
+	\end{equation}
+	
+\end{frame}
+
+\begin{frame}{Invarianza al rescaling}
+	
+	Per rendere più chiaro il confronto, ricordiamo che:
+	%
+	\begin{equation}
+		\underset{\mathbf{w}}{\arg\min} \;\; L(\mathbf{w}) = \underset{\mathbf{w}}{\arg\min} \;\; aL(\mathbf{w}) +b
+	\end{equation}
+	%
+	per qualsiasi scelta di $a$ e $b$. Quindi:
+	%
+	\begin{equation}
+		\underset{\mathbf{w}}{\arg\min} \, \frac{1}{{\color{red}\sigma^2}}\sum_{i=1}^n \left(y_i - f(\mathbf{x}_i)\right)^2 = \underset{\mathbf{w}}{\arg\min} \, \frac{1}{{\color{red}n}}\sum_{i=1}^n \left(y_i - f(\mathbf{x}_i)\right)^2
+	\end{equation}
+	%
+	Minimizzare la likelihood o minimizzare il rischio empirico (con MSE) porta alla stessa soluzione ottima.
+	
+\end{frame}
+
+\subsection{Soluzione del least-squares}
+
+\begin{frame}{Formulazione matriciale del least-squares}
+	
+	Per semplificare la notazione (ed avvicinarci ad una implementazione reale), definiamo la \textbf{matrice di input} ed il \textbf{vettore di output} come:
+	%
+	$$
+	\shape{\vc{X}}{(n,d)} = 
+	\begin{bmatrix}
+		\vc{x}_1^\top \\
+		\cdots \\
+		\vc{x}_n^\top
+	\end{bmatrix}
+	\hspace{0.5em}
+	\shape{\vc{y}}{(n)} =
+	\begin{bmatrix}
+		y_1 \\
+		\cdots \\
+		y_n
+	\end{bmatrix} \,.
+	$$
+	%
+	Ogni input è una riga della matrice. Il problema del least-squares diventa:
+	%
+	$$
+	\text{LS}(\mathbf{w}) = \frac{1}{n} \bigl( \vc{y} - \vc{X}\vc{w} \bigr)^\top \bigl(\vc{y} - \vc{X}\vc{w} \bigr) = \frac{1}{n} \lVert\vc{y} - \vc{X}\vc{w}\rVert^2 \,.
+	$$
+	
+\end{frame}
+
+\begin{frame}{Equazioni normali}
+	
+	Per risolvere il problema calcoliamo il gradiente (anche dette le \myalert{equazioni normali}):
+	%
+	\begin{equation}
+		\nabla \text{LS}(\vc{w}) = \frac{2}{n}\vc{X}^\top(\vc{X}\vc{w} - \vc{y}) \,.
+	\end{equation}
+	%
+	Partendo da una inizializzazione casuale $\mathbf{w}_0$, la discesa al gradiente è quindi:
+	%
+	\begin{equation}
+		\mathbf{w}_t = \mathbf{w}_{t-1} - \eta_t \nabla \text{LS}(\vc{w}_{t-1}) \,.
+	\end{equation}
+	%
+	Questa sequenza converge all'ottimo globale del least-squares, come si dimostra analizzandone la convessità.
+	
+\end{frame}
+
+\begin{frame}{Convessità del least-squares}
+	
+	Per iniziare, proviamo che la norma $\lVert \cdot \rVert^2$ è strettamente convessa:
+	%
+	\begin{equation}
+		\lVert \lambda \vc{\mathbf{x}}_1 + (1 - \lambda)\vc{x}_2 \rVert^2 \le \lambda \lVert\vc{\vc{x}}_1\rVert^2 + (1 - \lambda)\lVert\vc{\mathbf{x}}_2\rVert^2
+	\end{equation}
+	%
+	Espandendo i termini:
+	%
+	\begin{equation}
+		-\lambda(1-\lambda)\vc{\mathbf{x}}_1^\top\vc{x}_1 - \lambda(1-\lambda)\vc{\mathbf{x}}_2^\top\vc{\mathbf{x}}_2 + 2 \lambda(1-\lambda)\vc{\mathbf{x}}_1^\top\vc{\mathbf{x}}_2 \le 0 \,,
+	\end{equation}
+	%
+	che possiamo riformulare come:
+	%
+	\begin{equation}
+		\lambda(1-\lambda)\lVert \vc{\mathbf{x}}_1 - \vc{x}_2 \rVert^2 \ge 0 \,,
+	\end{equation}
+	%
+	che è facilmente verificabile.
+	
+\end{frame}
+
+
+\begin{frame}{Convessità del least-squares (2)}
+	
+	La combinazione di una funzione convessa $g$ con una mappa affine $g(\vc{A}\vc{x} + \vc{b})$ è convessa:
+	%
+	\begin{align}
+		g(\vc{A}(\lambda \vc{x}_1 + (1-\lambda)\vc{x}_2) + \vc{b}) = \nonumber\\ g(\lambda(\vc{A}\vc{x}_1 + \vc{b}) + (1-\lambda)(\vc{A}\vc{x}_2 + \vc{b})) \le \nonumber\\ \lambda(\vc{A}\vc{x}_1 + \vc{b}) + (1-\lambda)(\vc{A}\vc{x}_2 + \vc{b}) \,.
+	\end{align}
+	
+	Da questo risulta che il LS è convesso (ma non necessariamente strettamente convesso), e tutti i minimi sono globali (informalmente: immaginate un paraboloide nello spazio o una valle circondata da montagne uniformi).
+	
+\end{frame}
+
+\begin{frame}{Soluzione in forma chiusa}
+	
+	Analizzando le equazioni normali, ci si accorge che il LS è speciale nel senso che le equazioni nel punto di stazionarietà descrivono un sistema di equazioni lineari che possono essere risolte in forma chiusa:
+	%
+	\begin{equation}
+		\frac{2}{n}\vc{X}^\top\left(\vc{X}\vc{w}-\vc{y}\right) = \vc{0} \,.
+	\end{equation}
+	%
+	Supponendo che la matrice $\vc{X}\vc{X}^\top$ possa essere invertita (rango pieno):
+	%
+	\begin{equation}
+		\vc{w}^* = \stackunder{\left(\vc{X}^\top\vc{X}\right)}{\sss (d, d)}^{-1}\stackunder{\vc{X}^\top}{\sss (d,n)} \stackunder{\vc{y}}{\sss (n)} %= \stackunder{\vc{X}^\top}{\sss (d,n)}\stackunder{\left(\vc{X}\vc{X}^\top\right)}{\sss (n, n)}^{-1} \stackunder{\vc{y}}{\sss (n)} \,.
+	\end{equation}
+	
+\end{frame}
+
+\begin{frame}[fragile]{Codice (NumPy)}
+	
+	Generiamo dati casuali:
+	%
+	\begin{python}
+		# Simuliamo dati generati a loro volta da 
+		# un modello lineare (con rumore).
+		X = np.random.randn((10, 5))
+		y = X @ np.random.randn((5, 1)) + np.random.randn((10, 1))*0.01
+	\end{python}
+	%
+	Modello lineare:
+	%
+	\begin{python}
+		w = np.random.randn((5, 1))
+		yhat = X @ w # (10, 1)
+	\end{python}
+	%
+	Funzione costo:
+	%
+	\begin{python}
+		mse = ((y - yhat)**2).mean()
+	\end{python}
+	
+\end{frame}
+
+\begin{frame}[fragile]{Codice (NumPy, 2)}
+	
+	Soluzione esplicita (numericamente instabile):
+	%
+	\begin{python}
+		wopt = np.linalg.inv(X.T @ X) @ X.T @ y
+	\end{python}
+	%
+	Soluzione esplicita (numericamente stabile)
+	%
+	\begin{python}
+		wopt = np.linalg.solve(X.T @ X, X.T @ y)
+	\end{python}
+	
+\end{frame}
+
+{\setbeamercolor{background canvas}{bg=white}
+	\begin{frame}[fragile]{Codice (NumPy, 3)}
+		
+		Implementazione base della discesa al gradiente:
+		%
+		\begin{python}
+			for i in range(15000):
+				# Ricordando il segno meno nel gradiente...
+				w = w + 0.001 * X.T @ (y - X @ w)
+		\end{python}
+		%
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.4\columnwidth]{../scripts/least_squares_example}
+		\end{figure}
+		
+	\end{frame}
+}
+
+\begin{whiteframe}{Un esempio visuale}
+	
+	\begin{figure}
+		\centering\includegraphics{../scripts/OLS_linear_data.pdf} %
+		\caption{Si noti che in questo caso il LS è la soluzione \textit{ottimale} ed \textit{unbiased}.}
+	\end{figure}
+	
+\end{whiteframe}
+
+
+
+
+\begin{whiteframe}{Un altro esempio}
+	
+	\begin{figure}
+		\centering\includegraphics{../scripts/OLS_nonlinear_data.pdf} %
+		\caption{In un caso più complesso, le predizioni di un modello lineare sono molto limitate.}
+	\end{figure}
+	
+\end{whiteframe}
+
+{\setbeamercolor{background canvas}{bg=white}
+	\begin{frame}{Il quartetto di Ascombe}
+		
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.65\columnwidth]{images/1280px-Anscombe's_quartet_3.png}
+			\vspace{-0.5em}\caption{I quattro dataset del \myalert{quartetto di Ascombe} hanno la stessa soluzione. Source: WikiMedia, author Schutz.}
+		\end{figure}
+		
+	\end{frame}
+}
+
+\begin{frame}{Efficienza degli algoritmi}
+	
+	Oltre all'accuratezza predittiva, un aspetto fondamentale nella scelta di un algoritmo è il suo \myalert{costo computazionale}:
+	%
+	\begin{enumerate}
+		\item \textbf{Tempo}: quanto impiega l'algoritmo a trovare la soluzione?
+		\item \textbf{Memoria}: quanta RAM è necessaria per memorizzare i dati intermedi?
+	\end{enumerate}
+	%
+	In particolare, ci interessa la \myalert{complessità asintotica}: non il tempo esatto in secondi (che dipende dall'hardware), ma come scala il costo al crescere della grandezza del dataset $n$ e delle feature $d$.
+	
+\end{frame}
+
+\begin{frame}{Cenni sulla complessità computazionale}
+	
+	Analizziamo il costo computazionale usando la notazione $\mathcal{O}(\cdot)$, che descrive come cresce il tempo di calcolo al crescere delle dimensioni del problema ($n$ e $d$).
+	
+	\begin{itemize}
+		\item \textbf{Soluzione esplicita}: Richiede calcolare $\mathbf{X}^\top\mathbf{X}$ in $\mathcal{O}(nd^2)$ e invertirla in $\mathcal{O}(d^3)$. Costo totale: $\mathcal{O}(nd^2 + d^3)$.
+		\item \textbf{Discesa al gradiente}: Ogni passo richiede il calcolo del gradiente in $\mathcal{O}(nd)$. Per $k$ passi: $\mathcal{O}(knd)$.
+	\end{itemize}
+	%
+	Se $d$ (numero di feature) è molto grande, la soluzione esplicita è impraticabile ($d^3$), mentre la discesa al gradiente scala linearmente con $d$.
+	
+\end{frame}
+
+\end{document}
