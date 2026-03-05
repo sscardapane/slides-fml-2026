@@ -248,7 +248,7 @@
 	La norma Euclidea si può riscrivere in funzione dei prodotti scalari:
 	%
 	\begin{equation*}
-		\lVert \vc{x} - \vc{y} \rVert_2^2 = \langle \vc{x}, \vc{x} \rangle + \langle \vc{y}, \vc{y} \rangle - 2 \langle \vc{x}, \vc{y} \rangle \,.
+		\lVert \vc{x} - \vc{y} \rVert^2 = \langle \vc{x}, \vc{x} \rangle + \langle \vc{y}, \vc{y} \rangle - 2 \langle \vc{x}, \vc{y} \rangle \,.
 	\end{equation*}
 	
 \end{frame}
@@ -345,7 +345,7 @@
 		\end{equation*}
 	\end{tcolorbox}
 	%
-	In questa forma, ogni riga di $\vc{Z}$ è il prodotto matrice-vettore tra $\vc{X}$ ed una colonna di $\vc{Y}$, ovvero $\vc{Z}_{:,j} = \vc{X} \vc{Y}_{:,j}$.
+	In questa forma, ogni colonna di $\vc{Z}$ è il prodotto matrice-vettore tra $\vc{X}$ ed una colonna di $\vc{Y}$, ovvero $\vc{Z}_{:,j} = \vc{X} \vc{Y}_{:,j}$.
 \end{frame}
 
 \begin{frame}[fragile]{Operazioni batched}
