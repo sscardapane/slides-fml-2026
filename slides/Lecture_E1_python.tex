@@ -117,16 +117,16 @@
     \begin{python}
         # utils.py
         def greet(name: str) -> str:
-        return f"Ciao, {name}!"
+            return f"Ciao, {name}!"
 
         # main.py
         from utils import greet
 
         def main():
-        print(greet("Python"))
+            print(greet("Python"))
 
         if __name__ == "__main__":
-        main()
+            main()
     \end{python}
 \end{frame}
 
@@ -272,11 +272,11 @@
     \begin{python}
         x = 10
         if x > 5:
-        print("Grande")
+            print("Grande")
         elif x == 5:
-        print("Medio")
+            print("Medio")
         else:
-        print("Piccolo")
+            print("Piccolo")
     \end{python}
     \textbf{Truthy/Falsy}: Valori "vuoti" (\pythoninline{0}, \pythoninline{[]}, \pythoninline{""}, \pythoninline{None}) sono valutati come \pythoninline{False}.
 \end{frame}
@@ -285,12 +285,12 @@
     \begin{python}
         # range(start, stop, step)
         for i in range(0, 5, 2):
-        print(i) # 0, 2, 4
+            print(i) # 0, 2, 4
 
         # Iterare su elementi
         names = ["ML", "AI", "DL"]
         for name in names:
-        if name == "AI":
+            if name == "AI":
         continue # Salta
         print(name)
     \end{python}
@@ -394,9 +394,9 @@
     Coppie chiave-valore. Utili come contenitori di iper-parametri.
     \begin{python}
         config = {
-        'lr': 0.01,
-        'epochs': 10,
-        'optimizer': 'Adam'
+            'lr': 0.01,
+            'epochs': 10,
+            'optimizer': 'Adam'
         }
         print(config['lr'])
         config['batch_size'] = 32
@@ -435,7 +435,7 @@
         labels = [0, 1, 0]
 
         for i, (x, y) in enumerate(zip(inputs, labels)):
-        print(f"Esempio {i}: Input {x}, Label {y}")
+            print(f"Esempio {i}: Input {x}, Label {y}")
     \end{python}
 \end{frame}
 
@@ -466,9 +466,9 @@
 \begin{frame}[fragile]{Definizione e Default Args}
     \begin{python}
         def train_model(data, lr=0.01, model_type="CNN"):
-        """Docstring: addestra un modello."""
-        print(f"Training {model_type} with lr={lr}")
-        return "Success", 0.95 # Ritorna una tupla
+            """Docstring: addestra un modello."""
+            print(f"Training {model_type} with lr={lr}")
+            return "Success", 0.95 # Ritorna una tupla
     \end{python}
     \textbf{Chiamate flessibili}:
     \begin{python}
@@ -537,9 +537,9 @@
 \begin{frame}[fragile]{Gestione Errori}
     \begin{python}
         try:
-        val = int(input("Inserisci un numero: "))
+            val = int(input("Inserisci un numero: "))
         except ValueError:
-        print("Non era un numero!")
+            print("Non era un numero!")
     \end{python}
 \end{frame}
 
