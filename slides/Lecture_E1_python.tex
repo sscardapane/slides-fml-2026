@@ -191,7 +191,7 @@
     \textbf{Type Hints}: Suggerimenti non vincolanti a runtime.
     \begin{python}
         def process_data(value: float, name: str) -> str:
-        return f"{name}: {value}"
+            return f"{name}: {value}"
     \end{python}
 \end{frame}
 
@@ -209,7 +209,7 @@
     \end{python}
 \end{frame}
 
-\begin{frame}[fragile]{Assegnamento vs Copia}
+\begin{frame}[fragile]{Assegnazione vs Copia}
     Per evitare l'aliasing, dobbiamo creare una copia esplicita:
     \begin{python}
         a = [1, 2, 3]
@@ -255,7 +255,7 @@
     Python offre diversi modi per stampare variabili:
     \begin{itemize}
         \item \textbf{Standard}: \pythoninline{print("Il valore è", x)}
-        \item \textbf{f-strings} (Python 3.6+): \pythoninline{print(f"Il valore è {x}")}
+        \item \textbf{f-strings} (Python 3.6+): \pythoninline{print(f"Il valore è \{x\}")}
     \end{itemize}
     \begin{python}
         acc = 0.95
@@ -291,7 +291,7 @@
         names = ["ML", "AI", "DL"]
         for name in names:
             if name == "AI":
-        continue # Salta
+                continue # Salta
         print(name)
     \end{python}
 \end{frame}
@@ -404,7 +404,7 @@
     \textbf{Iterazione}:
     \begin{python}
         for k, v in config.items():
-        print(f"{k} -> {v}")
+            print(f"{k} -> {v}")
     \end{python}
 \end{frame}
 
@@ -480,7 +480,7 @@
     In Python le funzioni sono "first-class citizens".
     \begin{python}
         def double(x): return x * 2
-        f = double
+            f = double
         print(f(5)) # 10
 
         # Lambda (anonime)
